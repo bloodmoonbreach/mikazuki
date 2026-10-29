@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Create your account · mikazuki</title>
+<link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/fonts.css">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="login-page">
+<main class="login">
+  <div class="login-card">
+    <svg class="login-moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.4 2.6a9.6 9.6 0 1 0 5.4 17.3A8 8 0 1 1 15.4 2.6z"/></svg>
+    <h1 class="login-brand">mikazuki</h1>
+    <p class="muted">Create the account for this installation. It's the only one: mikazuki is a personal tool.</p>
+    {% if error %}<p class="note bad" role="alert">{{ error }}</p>{% endif %}
+    <form method="post" action="/setup/account" class="stack">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <label>Setup code
+        <input name="code" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" required placeholder="XXXX-XXXX-XXXX" {% if not user %}autofocus{% endif %}>
+        <span class="hint">Printed in the server log when mikazuki starts (<code>docker compose logs mikazuki</code>), and saved in <code>setup-code.txt</code> in the data folder. It proves you're the one who installed it.</span>
+      </label>
+      <label>Username <input name="username" autocomplete="username" autocapitalize="off" spellcheck="false" value="{{ user }}" required pattern="[A-Za-z0-9._@-]{2,40}"></label>
+      <label>Password <input name="password" type="password" autocomplete="new-password" required minlength="10">
+        <span class="hint">At least 10 characters. A password manager's suggestion is ideal.</span></label>
+      <label>Password again <input name="password2" type="password" autocomplete="new-password" required minlength="10"></label>
+      <button class="wide">Create account</button>
+    </form>
+  </div>
+</main>
+</body>
+</html>

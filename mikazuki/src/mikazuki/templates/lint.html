@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}Lint{% endblock %}
+{% block content %}
+<h1>Lint</h1>
+{% if load_error %}<p class="note bad">{{ load_error }}</p>{% endif %}
+{% if not issues and not load_error %}<p class="note ok">No problems found.</p>{% endif %}
+<ul class="issues">{% for i in issues %}<li class="{{ i.level }}"><b>{{ i.level }}</b> <code>{{ i.where }}</code> {{ i.message }}</li>{% endfor %}</ul>
+{% endblock %}

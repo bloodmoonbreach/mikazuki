@@ -1,0 +1,107 @@
+{% extends "base.html" %}{% from "_moon.html" import moon %}{% block title %}Feed{% endblock %}
+{% block head %}{% if run_state.running %}<meta http-equiv="refresh" content="20">{% endif %}{% endblock %}
+{% block content %}
+<h1>Feed</h1>
+{% if cfg_error %}<p class="note bad">feed.toml: {{ cfg_error }} — <a href="/edit?file=feed.toml">edit it</a></p>{% endif %}
+<div class="row">
+  <form method="post" action="/feed/run"><input type="hidden" name="csrf" value="{{ csrf }}">
+    <button {% if run_state.running %}disabled{% endif %}>{{ 'Running…' if run_state.running else 'Run now' }}</button>
+    <label class="check"><input type="checkbox" name="force" value="1"> Ignore source intervals</label></form>
+  <span class="hint">
+    {% if last %}Last run {{ last.started[:16].replace('T', ' ') }} UTC: {{ last.summary.new }} new ({{ last.summary.good }} matches), {{ last.summary.seen }} already seen{% if last.summary.not_jobs %}, {{ last.summary.not_jobs }} course ads or internships hidden{% endif %}{% if last.summary.errors %}, <span class="bad">{{ last.summary.errors|length }} source error(s)</span>{% endif %}{% if last.summary.needs_setup %}, <span class="muted" title="{{ last.summary.needs_setup.values()|join('; ') }}">waiting for a key: {{ last.summary.needs_setup.keys()|join(', ') }}</span>{% endif %}{% if last.summary.notify_errors %}, <span class="bad">notify: {{ last.summary.notify_errors|join('; ') }}</span>{% endif %}.{% else %}Never run yet.{% endif %}
+    {% if run_state.last_error %}<span class="bad">Last error: {{ run_state.last_error }}</span>{% endif %}
+    <a href="/edit?file=feed.toml">Searches &amp; schedule</a>
+  </span>
+</div>
+
+<nav class="tabs">
+  {% for t in tabs %}<a href="/feed?status={{ t }}" {% if t == status %}aria-current="page"{% endif %}>{{ t|capitalize }} <small>{{ counts.get(t, {}).get('good' if t == 'new' else 'all', 0) }}</small></a>{% endfor %}
+  {% if status == 'new' %}<a href="/feed?status=new&all={{ 0 if all else 1 }}">{{ 'Only matches' if all else 'Show all new' }}</a>{% endif %}
+</nav>
+{% if searches|length > 1 %}<nav class="filters" aria-label="Filter by search"><a href="/feed?status={{ status }}" {% if not search %}aria-current="page"{% endif %}>All searches</a>{% for s in searches %}<a href="/feed?status={{ status }}&search={{ s|urlencode }}" {% if s == search %}aria-current="page"{% endif %}>{{ s }}</a>{% endfor %}</nav>{% endif %}
+
+{% for j in jobs %}{% set traps = (j.traps or [])|reject('equalto', '?')|list %}
+<article class="job{{ ' good' if j.good else '' }}">
+  <div class="job-head">
+    <div class="job-id">
+      <h2 class="job-title"><a href="{{ j.url|safe_url }}" target="_blank" rel="noopener noreferrer">{{ j.title }}</a></h2>
+      <p class="job-meta">
+        {% if j.company %}<span class="job-company">{{ j.company }}</span>{% endif %}
+        <span>{{ j.location or 'Location not given' }}</span>
+        {% if j.posted %}<span>Posted {{ j.posted[:10] }}</span>{% endif %}
+      </p>
+    </div>
+    <div class="job-signal">
+      {% if j.fit is not none %}{{ moon(j.fit) }}{% endif %}
+      <ul class="verdicts" aria-label="Can it be done from">
+        {% for c, v in (j.verdicts or {}).items() %}<li class="v {{ v }}" title="{{ c }}: {{ v }}">{{ c }} <span>{{ v }}</span></li>{% endfor %}
+        {% if j.local_match %}<li class="v yes">Local</li>{% endif %}
+      </ul>
+    </div>
+  </div>
+  <p class="job-facts">
+    {% if j.mode %}<span class="tag">{{ j.mode }}</span>{% endif %}
+    {% if j.salary %}<span>{{ '{:,.0f}'.format(j.salary.min) }}{% if j.salary.max != j.salary.min %}–{{ '{:,.0f}'.format(j.salary.max) }}{% endif %} {{ j.salary.currency }}/{{ j.salary.period }}</span>{% endif %}
+    {% if j.languages and j.languages.required %}<span>{{ j.languages.required.keys()|join(', ')|upper }}{% if j.languages.missing %} <b class="bad">(you don't list {{ j.languages.missing|join(', ') }})</b>{% endif %}</span>{% endif %}
+    <span class="muted">via {{ j.source_name }}{% if j.also_on %}, also on {{ j.also_on|join(', ') }}{% endif %}</span>
+    <span class="muted">{{ j.search }}</span>
+  </p>
+  {% if j.matched or j.gaps %}
+  <details class="keywords"><summary>Keywords: {{ j.matched|length }} matched, {{ j.gaps|length }} missing</summary>
+    {% if j.matched %}<p><b>Matched</b> {{ j.matched[:12]|join(', ') }}</p>{% endif %}
+    {% if j.gaps %}<p class="muted"><b>Missing</b> {{ j.gaps[:12]|join(', ') }}</p>{% endif %}
+  </details>
+  {% endif %}
+  {% if traps or j.risk == 'high' or j.traps %}<p class="note warn small">This post contains text aimed at AI tools{% if traps %}, including the trap word{{ 's' if traps|length > 1 }} {{ traps|join(', ') }}: don't use {{ 'them' if traps|length > 1 else 'it' }}{% endif %}. It was removed before checking.</p>{% endif %}
+  <div class="job-actions">
+    <form method="post" action="/jobs/{{ j.uid }}/apply"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Apply</button></form>
+    <a class="quiet" href="{{ j.url|safe_url }}" target="_blank" rel="noopener noreferrer">Open posting</a>
+    <a class="quiet" href="/check?job={{ j.uid }}">Check &amp; tailor CV</a>
+    {% for st in tabs if st != status %}
+    <form method="post" action="/feed/{{ j.uid }}/status"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="status" value="{{ st }}"><input type="hidden" name="back_to" value="{{ status }}"><button class="quiet">{{ {'new': 'Back to new', 'saved': 'Save', 'applied': 'Mark applied', 'dismissed': 'Dismiss'}[st] }}</button></form>
+    {% endfor %}
+  </div>
+</article>
+{% else %}
+<p class="empty">{% if status == 'new' and not all %}No new matches. <a href="/feed?status=new&all=1">Show every new job</a>, or run the feed.{% else %}Nothing here yet.{% endif %}</p>
+{% endfor %}
+
+<details {% if not companies %}open{% endif %}><summary>Company career pages ({{ companies|length }})</summary>
+  <form method="post" action="/feed/companies/add" class="row">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <input name="url" type="url" required placeholder="Careers page or job link, e.g. https://jobs.lever.co/acme" size="46">
+    <input name="name" placeholder="Company name (optional)" size="22">
+    <button class="ghost">Add company</button>
+  </form>
+  <p class="hint">Greenhouse, Lever, Ashby, Workable, SmartRecruiters, Recruitee, Personio, Teamtailor, Breezy and Workday boards are read directly from the company's own job system. Remove one in <a href="/edit?file=feed.toml">feed.toml</a>.</p>
+  {% if companies %}<p class="small">{% for c in companies %}<span class="chip" title="{{ c.ats }}: {{ c.slug }}">{{ c.name }}</span> {% endfor %}</p>{% endif %}
+</details>
+
+<details {% if careers and careers|selectattr('state', 'equalto', 'needs_browser')|list %}open{% endif %}><summary>Careers pages without an API ({{ careers|length }})</summary>
+  <form method="post" action="/feed/careers/add" class="row">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <input name="url" type="url" required placeholder="Company website or careers page, e.g. https://www.example-security.com/" size="46">
+    <input name="name" placeholder="Company name (optional)" size="22">
+    <button class="ghost">Add careers page</button>
+  </form>
+  <p class="hint">Checked politely: robots.txt and crawl-delay are respected; a site that shows a bot challenge is skipped, never worked around. Pages that only work with JavaScript go to the browser helper (Crawl4AI on the PC){% if not helper %}, which isn't configured{% endif %}.</p>
+  {% if careers %}
+  <table class="list small stackable">
+    <tr><th>Company</th><th>Result</th><th>Jobs read</th><th>Checked</th></tr>
+    {% for c in careers %}{% set lab = careers_labels.get(c.state, ('', c.state)) %}
+    <tr><td data-label="Company"><a href="{{ c.url|safe_url }}" target="_blank" rel="noopener noreferrer">{{ c.name }}</a></td>
+      <td data-label="Result"><span class="st {{ 'interview' if lab[0] == 'ok' else ('rejected' if lab[0] == 'bad' else 'applied') }}">{{ c.state.replace('_', ' ') }}</span> {{ lab[1] }}{% if c.detail %}<div class="muted">{{ c.detail }}</div>{% endif %}</td>
+      <td data-label="Jobs read">{{ c.jobs or '' }}</td><td data-label="Checked" class="muted">{{ (c.checked or '')[:16].replace('T', ' ') }}</td></tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+  {% if blocked %}<p class="small"><b>Quarantined</b> (refused automated access; retried after the date shown): {% for b in blocked %}<span class="chip" title="{{ b.reason }}">{{ b.host }} · until {{ b.until[:10] }}</span> {% endfor %}</p>{% endif %}
+</details>
+
+{% if sources %}
+<details><summary>Sources</summary>
+<table class="list small stackable"><tr><th>Source</th><th>Last fetch</th><th>Jobs</th><th>Error</th></tr>
+{% for s in sources %}<tr><td data-label="Source">{{ s.key }}</td><td data-label="Last fetch">{{ (s.last_fetch or '')[:16].replace('T', ' ') }}</td><td data-label="Jobs">{{ s.last_count }}</td><td data-label="Error" class="bad">{{ s.last_error or '' }}</td></tr>{% endfor %}
+</table></details>
+{% endif %}
+{% endblock %}

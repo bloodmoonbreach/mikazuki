@@ -1,0 +1,10 @@
+# Your personal data never belongs in git
+data/
+.env
+compose.yaml
+about.md
+# Python
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/

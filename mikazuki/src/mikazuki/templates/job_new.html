@@ -1,0 +1,22 @@
+{% extends "base.html" %}{% block title %}Add a job{% endblock %}
+{% block content %}
+<h1>Add a job</h1>
+<p class="hint">For jobs you found yourself (LinkedIn, InfoJobs, a company site, a referral). Jobs from the feed are added automatically.</p>
+<form method="post" action="/jobs/new" class="stack details">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <div class="grid2">
+    <label>Title <input name="title" value="{{ form.title or '' }}" required></label>
+    <label>Company <input name="company" value="{{ form.company or '' }}"></label>
+    <label>Link <input name="url" type="url" value="{{ form.url or '' }}" placeholder="https://…"></label>
+    <label>Location <input name="location" value="{{ form.location or '' }}" placeholder="Remote - Spain, Hybrid - Madrid…"></label>
+    <label>Profile <input name="profile" value="{{ form.profile or '' }}" list="profiles" placeholder="Cybersecurity / Help desk"></label>
+    <datalist id="profiles">{% for p in profiles %}<option value="{{ p }}">{% endfor %}<option value="Cybersecurity"><option value="Help desk"></datalist>
+    <label>Platform <input name="platform" value="{{ form.platform or '' }}" placeholder="LinkedIn, InfoJobs, company site…"></label>
+    <label>Posted <input name="posted" type="date" value="{{ form.posted or '' }}"></label>
+    <label>Status <select name="status">{% for st in ['saved', 'applied', 'interview', 'rejected'] %}<option {% if form.status == st %}selected{% endif %}>{{ st }}</option>{% endfor %}</select></label>
+    <label>Applied on <input name="applied_at" type="date" value="{{ form.applied_at or '' }}"></label>
+  </div>
+  <label>Job description (optional, paste it to check and tailor later) <textarea name="text" rows="8">{{ form.text or '' }}</textarea></label>
+  <div class="row"><button>Add</button> <a href="/tracker">Cancel</a></div>
+</form>
+{% endblock %}

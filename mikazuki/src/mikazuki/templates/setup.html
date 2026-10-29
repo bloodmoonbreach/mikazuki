@@ -1,0 +1,317 @@
+{% extends "base.html" %}{% block title %}Setup{% endblock %}
+{% block content %}
+{% set you = ans.get('you') or {} %}
+{% set r = ans.get('roles') or {} %}
+{% set w = ans.get('where') or {} %}
+{% set ai = ans.get('ai') or {} %}
+<h1>Set up mikazuki <small>Tailor the feed, the CVs and the application drafts to you. You can change everything later.</small></h1>
+
+<ol class="steps" aria-label="Setup steps">
+  {% for sid, label in steps %}
+  <li class="{% if sid == step %}current{% elif sid in done %}done{% endif %}">
+    {% if sid == step %}<span aria-current="step">{{ label }}</span>{% else %}<a href="/setup/{{ sid }}">{{ label }}</a>{% endif %}
+  </li>
+  {% endfor %}
+</ol>
+
+{% if form_error %}<p class="note bad" role="alert">{{ form_error }}</p>{% endif %}
+
+{% if step == 'you' %}
+<form method="post" action="/setup/you" class="stack setup-form">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <h2>About you</h2>
+  <p class="hint">Contact details for your CV header. Leave out address, age, photo and nationality: employers in the EU don't need them, and some reject CVs that include them.</p>
+  <div class="grid2">
+    <label>Full name <input name="name" value="{{ you.get('name','') }}" required autocomplete="name"></label>
+    <label>Email <input name="email" type="email" value="{{ you.get('email','') }}" autocomplete="email"></label>
+    <label>Phone <span class="muted">(optional)</span><input name="phone" value="{{ you.get('phone','') }}" autocomplete="tel"></label>
+    <label>Website <span class="muted">(optional)</span><input name="website" value="{{ you.get('website','') }}"></label>
+    <label>LinkedIn handle <span class="muted">(optional)</span><input name="linkedin" value="{{ you.get('linkedin','') }}" placeholder="jane-doe" spellcheck="false"></label>
+    <label>GitHub handle <span class="muted">(optional)</span><input name="github" value="{{ you.get('github','') }}" placeholder="janedoe" spellcheck="false"></label>
+  </div>
+  <fieldset>
+    <legend>Languages your CVs should be in</legend>
+    {% set cv_langs = you.get('cv_langs') or ['en'] %}
+    <div class="choices">
+      {% for code, name in packs.CV_LANGS.items() %}
+      <label class="check"><input type="checkbox" name="cv_langs" value="{{ code }}" {% if code in cv_langs %}checked{% endif %}> {{ name }}</label>
+      {% endfor %}
+    </div>
+    <label>Main language
+      <select name="cv_main">{% for code, name in packs.CV_LANGS.items() %}<option value="{{ code }}" {% if cv_langs and cv_langs[0] == code %}selected{% endif %}>{{ name }}</option>{% endfor %}</select>
+    </label>
+  </fieldset>
+  <div class="actions"><button>Continue</button></div>
+</form>
+
+{% elif step == 'roles' %}
+<form method="post" action="/setup/roles" class="stack setup-form">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <h2>What jobs are you looking for?</h2>
+  <p class="hint">Each role becomes a CV version and a search in the feed. Pick a field, then the roles in it; or name your own.</p>
+  <fieldset class="presets">
+    <legend>Field</legend>
+    {% for p in packs.presets() %}
+    <div class="preset">
+      <label class="check preset-name"><input type="radio" name="preset" value="{{ p.id }}" {% if r.get('preset') == p.id %}checked{% endif %}> {{ p.name }}</label>
+      <p class="hint">{{ p.blurb }}</p>
+      <div class="choices">
+        {% for role in p.role %}
+        <label class="check"><input type="checkbox" name="role" value="{{ role.id }}" {% if r.get('preset') == p.id and role.id in (r.get('ids') or []) %}checked{% endif %}> {{ role.title.en }}</label>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+    <div class="preset">
+      <label class="check preset-name"><input type="radio" name="preset" value="" {% if r and not r.get('preset') %}checked{% endif %}> Something else</label>
+      <p class="hint">Use only the roles you name below.</p>
+    </div>
+  </fieldset>
+  <fieldset>
+    <legend>Your own roles <span class="muted">(optional)</span></legend>
+    <p class="hint">The words employers put in job titles for this role, in every language you search in, separated by commas.</p>
+    {% set custom = r.get('custom') or [] %}
+    {% for i in range(3) %}
+    {% set c = custom[i] if i < custom|length else {} %}
+    <div class="grid2">
+      <label>Role <input name="custom{{ i }}_name" value="{{ c.get('name','') }}" placeholder="{{ ['Translator','Nurse','Electrician'][i] }}"></label>
+      <label>Title words <input name="custom{{ i }}_keywords" value="{{ (c.get('keywords') or [])|join(', ') }}" placeholder="{{ ['translator, traductor, localization','nurse, enfermero, enfermera','electrician, electricista'][i] }}"></label>
+    </div>
+    {% endfor %}
+  </fieldset>
+  <fieldset>
+    <legend>Experience level</legend>
+    <p class="hint">Hides job titles above or below your level (for example "Senior" or "Head of" for entry-level searches).</p>
+    <div class="choices">
+      {% for key, label in packs.LEVELS.items() %}
+      <label class="check"><input type="radio" name="level" value="{{ key }}" {% if (r.get('level') or 'entry') == key %}checked{% endif %}> {{ label }}</label>
+      {% endfor %}
+    </div>
+  </fieldset>
+  <div class="actions"><a class="quiet" href="/setup/you">Back</a><button>Continue</button></div>
+</form>
+
+{% elif step == 'where' %}
+<form method="post" action="/setup/where" class="stack setup-form">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <h2>Where can you work?</h2>
+  <fieldset>
+    <legend>Countries you can work from</legend>
+    <p class="hint">Every job gets a verdict for each of these: can you do it from there?</p>
+    <div class="choices countries">
+      {% for code, name in packs.country_choices() %}
+      <label class="check"><input type="checkbox" name="countries" value="{{ code }}" {% if code in (w.get('countries') or []) %}checked{% endif %}> {{ name }}</label>
+      {% endfor %}
+    </div>
+  </fieldset>
+  <fieldset>
+    <legend>Citizenships <span class="muted">(optional)</span></legend>
+    <p class="hint">Only used to answer "do you have the right to work in…" rules in job posts. Never shown on your CV.</p>
+    <select name="citizenships" multiple size="5">
+      {% for code, name in packs.country_choices() %}<option value="{{ code }}" {% if code in (w.get('citizenships') or []) %}selected{% endif %}>{{ name }}</option>{% endfor %}
+    </select>
+  </fieldset>
+  <fieldset>
+    <legend>Languages you speak</legend>
+    <p class="hint">Jobs that require a language you don't speak are flagged.</p>
+    {% set levels = w.get('language_levels') or {} %}
+    <div class="lang-grid">
+      {% for code, name in packs.CV_LANGS.items() %}
+      <label>{{ name }}
+        <select name="lang_{{ code }}">
+          <option value="">No</option>
+          {% for l in ['A1','A2','B1','B2','C1','C2','native'] %}<option value="{{ l }}" {% if levels.get(code) == l %}selected{% endif %}>{{ 'Native' if l == 'native' else l }}</option>{% endfor %}
+        </select>
+      </label>
+      {% endfor %}
+    </div>
+  </fieldset>
+  <fieldset>
+    <legend>Work mode</legend>
+    <label class="check"><input type="checkbox" name="local" value="1" {% if w.get('local') %}checked{% endif %}> Also show on-site and hybrid jobs near home</label>
+    <label>Towns that count as near home <input name="home" value="{{ (w.get('home') or [])|join(', ') }}" placeholder="Lyon, Villeurbanne, Vénissieux"></label>
+    <label class="check"><input type="checkbox" name="internships" value="1" {% if w.get('internships') %}checked{% endif %}> I'm a student and need an internship or work placement</label>
+    <p class="hint">Course adverts, bootcamps and job fairs are always hidden. Student internships are hidden unless you tick this.</p>
+  </fieldset>
+  <div class="actions"><a class="quiet" href="/setup/roles">Back</a><button>Continue</button></div>
+</form>
+
+{% elif step == 'ai' %}
+{% set provider = ai.get('provider') or 'none' %}
+<form method="post" action="/setup/ai" class="stack setup-form">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <h2>AI help <span class="muted">(optional)</span></h2>
+  <p class="hint">An AI model can turn your existing CV into mikazuki's format and draft answers to application questions from your facts. Everything else works without it.</p>
+  <fieldset class="presets">
+    <legend>Model</legend>
+    <div class="preset">
+      <label class="check preset-name"><input type="radio" name="provider" value="none" {% if provider == 'none' %}checked{% endif %}> No AI</label>
+      <p class="hint">You fill in your CV with a form, and Apply fills only the factual answers.</p>
+    </div>
+    <div class="preset">
+      <label class="check preset-name"><input type="radio" name="provider" value="ollama" {% if provider == 'ollama' %}checked{% endif %}> Ollama, on a computer you own</label>
+      <p class="hint">Free, private: nothing leaves your network. Needs a computer with a decent graphics card (a 12B model runs on 12 GB of video memory). Install <a href="https://ollama.com" rel="noopener">Ollama</a>, run <code>ollama pull gemma4:12b</code>, and let it listen on the network (<code>OLLAMA_HOST=0.0.0.0</code>).</p>
+    </div>
+    <div class="preset">
+      <label class="check preset-name"><input type="radio" name="provider" value="openai" {% if provider == 'openai' %}checked{% endif %}> An AI service, with your own API key</label>
+      <p class="hint">Any OpenAI-compatible API (OpenAI, Mistral, OpenRouter, Groq…). Usually costs a few cents a month at this volume.</p>
+      <p class="note warn"><strong>Privacy:</strong> your CV, your notes and the job posts you draft answers for are sent to that service, and its terms decide what it keeps. Ollama keeps everything at home.</p>
+    </div>
+  </fieldset>
+  <div class="grid2">
+    <label>Address <input name="base_url" value="{{ ai.get('base_url') or '' }}" placeholder="http://192.168.1.20:11434  or  https://api.openai.com/v1" spellcheck="false"></label>
+    <label>Model <input name="model" value="{{ ai.get('model') or '' }}" placeholder="gemma4:12b  or  gpt-4.1-mini" spellcheck="false"></label>
+  </div>
+  <label>API key <span class="muted">(AI service only)</span>
+    <input name="api_key" type="password" autocomplete="off" placeholder="{% if provider == 'openai' %}Saved. Leave empty to keep it{% else %}sk-…{% endif %}">
+    <span class="hint">Kept in a file only this app can read (<code>.llm-key</code> in the data folder), never in your settings files.</span>
+  </label>
+  {% if test_msg %}<p class="note {{ 'ok' if test_ok else 'bad' }}" role="status">{{ test_msg }}</p>{% endif %}
+  <div class="actions">
+    <a class="quiet" href="/setup/where">Back</a>
+    <button class="ghost" name="action" value="test">Test</button>
+    {% if test_msg and not test_ok %}<button class="ghost" name="action" value="save_anyway">Save anyway</button>{% endif %}
+    <button name="action" value="save">Continue</button>
+  </div>
+</form>
+
+{% elif step == 'cv' %}
+<h2>Your CV</h2>
+<p class="hint">mikazuki keeps every fact about you once, in <code>master.yaml</code>, and builds each CV version from it. Nothing in it is invented: what's missing is marked <code>TODO</code>.</p>
+{% if draft %}
+<form method="post" action="/setup/cv" class="stack setup-form">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <p class="note warn">Read every line. The model only copies your CV into the format, but it can misread or reword something. Fix anything here, or later on the Edit page.</p>
+  {% for w in warnings %}<p class="note warn">{{ w }}</p>{% endfor %}
+  <textarea name="draft" rows="28" spellcheck="false">{{ draft }}</textarea>
+  {% if has_master %}<label class="check"><input type="checkbox" name="replace" value="1"> Replace my current master.yaml <span class="muted">(the old one stays in History)</span></label>{% endif %}
+  <div class="actions"><a class="quiet" href="/setup/cv">Start over</a><button name="action" value="save_draft">Save and continue</button></div>
+</form>
+{% else %}
+<div class="cv-options">
+  {% if has_master %}
+  <form method="post" action="/setup/cv" class="option">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <h3>Keep my current master.yaml</h3>
+    <p class="hint">You already have one. The setup won't touch it.</p>
+    <button name="action" value="keep">Keep it and continue</button>
+  </form>
+  {% endif %}
+  <form method="post" action="/setup/cv" class="option stack">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <h3>Paste your CV</h3>
+    {% if (ai.get('provider') or 'none') == 'none' %}
+    <p class="hint">Needs AI help (previous step). Without it, use the form.</p>
+    {% else %}
+    <p class="hint">Open your CV, select all, copy, paste here. {{ ai.get('model') }} copies it into the format{% if ai.get('provider') == 'ollama' %}; this can take a minute or two{% endif %}. Address, nationality and birth date are dropped.</p>
+    <textarea name="cv_text" rows="10" placeholder="Paste the text of your CV">{{ cv_text or '' }}</textarea>
+    <button name="action" value="draft">Draft my master.yaml</button>
+    {% endif %}
+  </form>
+</div>
+<form method="post" action="/setup/cv" class="stack setup-form cv-form">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <h3>Or fill in the form</h3>
+  <p class="hint">The basics now; you can add more on the Edit page. Leave a block empty to skip it.</p>
+  <label>Summary <span class="muted">(2-4 sentences about you as a professional: what you do, how you work, what you bring)</span>
+    <textarea name="summary" rows="3"></textarea></label>
+  <input type="hidden" name="jobs" value="3"><input type="hidden" name="edus" value="2">
+  {% for i in range(3) %}
+  <fieldset>
+    <legend>Job {{ i + 1 }}{% if i == 0 %} (most recent){% endif %}</legend>
+    <div class="grid2">
+      <label>Job title <input name="job{{ i }}_role"></label>
+      <label>Employer <input name="job{{ i }}_company"></label>
+      <label>Start <input name="job{{ i }}_start" placeholder="2023-03" pattern="\d{4}(-\d{1,2})?"></label>
+      <label>End <span class="muted">(empty if you still work there)</span><input name="job{{ i }}_end" placeholder="2025-06" pattern="\d{4}(-\d{1,2})?"></label>
+    </div>
+    <label>What you did or achieved, one per line <span class="muted">(results with numbers work best)</span>
+      <textarea name="job{{ i }}_bullets" rows="3"></textarea></label>
+  </fieldset>
+  {% endfor %}
+  {% for i in range(2) %}
+  <fieldset>
+    <legend>Education {{ i + 1 }}</legend>
+    <div class="grid2">
+      <label>Degree or programme <input name="edu{{ i }}_degree"></label>
+      <label>School <input name="edu{{ i }}_school"></label>
+      <label>Start <input name="edu{{ i }}_start" placeholder="2020" pattern="\d{4}(-\d{1,2})?"></label>
+      <label>End <span class="muted">(empty if in progress)</span><input name="edu{{ i }}_end" placeholder="2022" pattern="\d{4}(-\d{1,2})?"></label>
+    </div>
+  </fieldset>
+  {% endfor %}
+  <label>Certifications, one per line: name | issuer | date | link
+    <textarea name="certs" rows="3" placeholder="CompTIA A+ | CompTIA | 2024-05 | https://…"></textarea></label>
+  <label>Skills in groups, one group per line
+    <textarea name="skills" rows="3" placeholder="Systems: Windows 11, Active Directory, Microsoft 365"></textarea></label>
+  <p class="hint">Languages come from the previous step.</p>
+  {% if has_master %}<label class="check"><input type="checkbox" name="replace" value="1"> Replace my current master.yaml <span class="muted">(the old one stays in History)</span></label>{% endif %}
+  <div class="actions"><a class="quiet" href="/setup/ai">Back</a><button name="action" value="form">Save and continue</button></div>
+</form>
+{% endif %}
+
+{% elif step == 'sources' %}
+{% set src = ans.get('sources') or {} %}
+{% set counts = packs.employer_count(ans) %}
+<form method="post" action="/setup/sources" class="stack setup-form">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <h2>Where to look</h2>
+  <p class="hint">mikazuki only reads sources that allow it: public job APIs and feeds, and employers' own job boards, slowly and identifying itself.</p>
+  <fieldset>
+    <legend>Job boards</legend>
+    <div class="choices">
+      {% for key, name, on in packs.available_boards(ans) %}
+      <label class="check"><input type="checkbox" name="boards" value="{{ key }}" {% if (src and key in src.get('boards', [])) or (not src and on) %}checked{% endif %}> {{ name }}</label>
+      {% endfor %}
+    </div>
+  </fieldset>
+  {% set kf = packs.key_fields(ans) %}
+  {% if kf %}
+  <fieldset>
+    <legend>Keys for job APIs</legend>
+    <p class="hint">Free personal keys; the sources are read only with yours. Kept in <code>.source-keys.json</code> in the data folder, readable only by this app, and never shown again.</p>
+    {% for name, source, signup in kf %}
+    {% if keys.from_environment(name) %}
+    <p class="hint"><code>{{ name }}</code> ({{ source }}) is set in the environment (.env).</p>
+    {% else %}
+    <label>{{ source }}: <code>{{ name }}</code> <a href="{{ signup|safe_url }}" target="_blank" rel="noopener">get a key</a>
+      <input name="key_{{ name }}" type="password" autocomplete="off" placeholder="{% if name in saved_keys %}Saved. Leave empty to keep it{% endif %}"></label>
+    {% endif %}
+    {% endfor %}
+  </fieldset>
+  {% endif %}
+  <fieldset>
+    <legend>Employers</legend>
+    <label class="check"><input type="checkbox" name="companies" value="1" {% if src.get('companies', True) %}checked{% endif %}> {{ counts[0] }} employers' job boards for your field</label>
+    <label class="check"><input type="checkbox" name="careers" value="1" {% if src.get('careers', True) %}checked{% endif %}> {{ counts[1] }} careers pages in your countries</label>
+    <p class="hint">Add more later on the Feed page: paste an employer's careers link and mikazuki finds its job system.</p>
+  </fieldset>
+  {% set alerts = packs.alerts_only(ans) %}
+  {% if alerts %}
+  <div class="note">
+    <p><strong>Use these sites' own email alerts.</strong> Their terms don't allow automated reading, so mikazuki doesn't read them: {{ alerts|join(', ') }}.</p>
+  </div>
+  {% endif %}
+  <div class="actions"><a class="quiet" href="/setup/cv">Back</a><button>Continue</button></div>
+</form>
+
+{% elif step == 'done' %}
+<form method="post" action="/setup/finish" class="stack setup-form">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <h2>Ready</h2>
+  <p>Saving writes <code>profile.toml</code>, <code>feed.toml</code> and a CV version for each role:
+    {% for role in packs.roles(ans) %}<span class="chip">{{ role.title.en }}</span> {% endfor %}</p>
+  <p class="hint">profile.toml is updated; your application facts in it (salary, availability…) are kept. Every file the setup replaces keeps its previous version in History on the Edit page.</p>
+  {% if has_feed %}<label class="check"><input type="checkbox" name="replace_feed" value="1"> Replace my current searches and employer list in feed.toml <span class="muted">(unticked: feed.toml stays as it is)</span></label>{% endif %}
+  {% if existing_tracks %}<label class="check"><input type="checkbox" name="replace_tracks" value="1"> Replace the CV versions that already exist: {% for t in existing_tracks %}<code>{{ t }}</code> {% endfor %}</label>{% endif %}
+  <label class="check"><input type="checkbox" name="run" value="1" checked> Start the first feed run now</label>
+  <div class="actions"><a class="quiet" href="/setup/sources">Back</a><button>Save setup</button></div>
+  <h3>Then</h3>
+  <ul class="hint">
+    <li>Open <a href="/edit">Edit</a> and fill the <code>TODO</code>s in master.yaml; <a href="/lint">Lint</a> lists them.</li>
+    <li>Add facts application forms ask for (salary, availability) under <code>[apply]</code> in <a href="/edit?file=profile.toml">Settings</a>.</li>
+    <li>Notifications on your phone: see <code>[notify]</code> in feed.toml.</li>
+  </ul>
+</form>
+{% endif %}
+{% endblock %}

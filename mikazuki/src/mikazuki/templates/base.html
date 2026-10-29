@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>{% block title %}mikazuki{% endblock %} · mikazuki</title>
+<link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/fonts.css">
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/app.js" defer></script>
+{% block head %}{% endblock %}
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <a class="brand" href="/" aria-label="mikazuki, dashboard">
+    <svg class="brand-moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.4 2.6a9.6 9.6 0 1 0 5.4 17.3A8 8 0 1 1 15.4 2.6z"/></svg>
+    <span>mikazuki</span>
+  </a>
+  <nav aria-label="Main">
+    <a href="/" {% if nav == 'dashboard' %}aria-current="page"{% endif %}>Dashboard</a>
+    <a href="/feed" {% if nav == 'feed' %}aria-current="page"{% endif %}>Feed</a>
+    <a href="/tracker" {% if nav in ('tracker','job','job_new','apply') %}aria-current="page"{% endif %}>Tracker</a>
+    <a href="/check" {% if nav == 'check' %}aria-current="page"{% endif %}>Check a job</a>
+    <a href="/files" {% if nav == 'files' %}aria-current="page"{% endif %}>CVs</a>
+    <a href="/edit" {% if nav in ('edit','snapshot') %}aria-current="page"{% endif %}>Edit</a>
+    <a href="/lint" {% if nav == 'lint' %}aria-current="page"{% endif %}>Lint</a>
+    <a href="/settings" {% if nav in ('settings','setup') %}aria-current="page"{% endif %}>Settings</a>
+  </nav>
+  {% if auth %}<form method="post" action="/logout" class="signout"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="quiet signout-btn" aria-label="Sign out"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v8M6.3 6.3a8 8 0 1 0 11.4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="label">Sign out</span></button></form>{% endif %}
+</header>
+<main id="main">
+  {% if flash %}<p class="note ok" role="status">{{ flash }}</p>{% endif %}
+  {% if error %}<p class="note bad" role="alert">{{ error }}</p>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+<footer>mikazuki {{ version }}</footer>
+</body>
+</html>

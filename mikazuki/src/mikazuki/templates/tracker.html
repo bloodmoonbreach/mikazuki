@@ -1,0 +1,45 @@
+{% extends "base.html" %}{% block title %}Tracker{% endblock %}
+{% block content %}
+<h1>Tracker</h1>
+<div class="row">
+  <a class="button" href="/jobs/new">Add a job</a>
+  <a class="button ghost" href="/tracker/export.xlsx">Export .xlsx</a>
+  <a class="button ghost" href="/tracker/export.csv">Export .csv</a>
+  <form method="post" action="/tracker/import" enctype="multipart/form-data" class="inline">
+    <input type="hidden" name="csrf" value="{{ csrf }}"><input type="file" name="file" accept=".csv,.xlsx" required>
+    <button class="ghost">Import</button></form>
+</div>
+
+<div class="scroll"><table class="list funnel">
+  <tr><th>Profile</th><th>Found</th><th>Saved</th><th>Applied</th><th>Waiting</th><th>No response</th><th>Rejected</th><th>Interviews</th><th>Offers</th><th>Answered</th><th>Interview rate</th></tr>
+  {% for p, f in funnel.items() %}
+  <tr {% if p == 'All' %}class="total"{% endif %}><td>{% if p != 'All' %}<a href="/tracker?profile={{ p|urlencode }}">{{ p }}</a>{% else %}All{% endif %}</td>
+    <td>{{ f.found }}</td><td>{{ f.saved }}</td><td><b>{{ f.applied }}</b></td><td>{{ f.waiting }}</td><td>{{ f.no_response }}</td>
+    <td>{{ f.rejected }}</td><td><b class="{{ 'ok' if f.interview else '' }}">{{ f.interview }}</b></td><td><b class="{{ 'ok' if f.offer else '' }}">{{ f.offer }}</b></td>
+    <td>{{ '%d%%'|format(f.response_rate) if f.response_rate is not none else '—' }}</td>
+    <td><b>{{ '%d%%'|format(f.interview_rate) if f.interview_rate is not none else '—' }}</b></td></tr>
+  {% endfor %}
+</table></div>
+<p class="hint">"No response" = applied 21+ days ago with no answer. "Answered" counts any reply, rejections included; "interview rate" is applications that led to an interview. Found = everything the feed or you added.</p>
+
+<nav class="tabs">
+  <a href="/tracker{% if profile %}?profile={{ profile|urlencode }}{% endif %}" {% if not status %}aria-current="page"{% endif %}>Active</a>
+  {% for st in statuses if st not in ('new',) %}<a href="/tracker?status={{ st }}{% if profile %}&profile={{ profile|urlencode }}{% endif %}" {% if st == status %}aria-current="page"{% endif %}>{{ st|capitalize }}</a>{% endfor %}
+  {% if profile %}<a href="/tracker?status={{ status }}">× {{ profile }}</a>{% endif %}
+</nav>
+
+<table class="list tracker stackable">
+  <tr><th>Status</th><th>Job</th><th>Profile</th><th>Platform</th><th>Applied</th><th>Response</th><th>Next</th></tr>
+  {% for j in jobs %}
+  <tr>
+    <td data-label="Status"><span class="st {{ j.status }}">{{ j.status }}</span></td>
+    <td data-label="Job" class="cell-main"><a href="/jobs/{{ j.uid }}"><b>{{ j.title }}</b></a>{% if j.company %} <span class="muted">at {{ j.company }}</span>{% endif %}<div class="muted small">{{ j.location or '' }}</div></td>
+    <td data-label="Profile" class="small">{{ j.profile or j.search or '' }}</td>
+    <td data-label="Platform" class="small">{{ j.platform or j.source_name or '' }}</td>
+    <td data-label="Applied" class="small">{{ j.applied_at or '' }}{% if j.waiting_days is not none %}<div class="{{ 'bad' if j.no_response else 'muted' }}">{{ j.waiting_days }} days{% if j.no_response %} · no response{% endif %}</div>{% endif %}</td>
+    <td data-label="Response" class="small">{{ j.response or '' }}{% if j.response_at %}<div class="muted">{{ j.response_at }}</div>{% endif %}</td>
+    <td data-label="Next" class="small">{{ j.next_action or '' }}{% if j.next_at %}<div class="muted">{{ j.next_at }}</div>{% endif %}</td>
+  </tr>
+  {% else %}<tr><td colspan="7">Nothing here yet. Save jobs from the <a href="/feed">feed</a>, or add one.</td></tr>{% endfor %}
+</table>
+{% endblock %}

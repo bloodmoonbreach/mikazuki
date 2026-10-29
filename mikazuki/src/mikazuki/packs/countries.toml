@@ -1,0 +1,50 @@
+# Country notes for the setup wizard: job boards mikazuki can read there (`sources`), and big boards whose
+# terms forbid automated reading (`alerts_only`), for which the wizard suggests their own email alerts.
+# Countries not listed here work too; they just get the international sources only.
+# Check a board's terms and robots.txt before adding it to `sources` (see AGENTS.md, rule 5).
+
+alerts_only_everywhere = ["LinkedIn", "Indeed", "Glassdoor"]
+
+[country.ES]
+sources = []
+alerts_only = ["InfoJobs (or its API with your own developer keys)", "Tecnoempleo"]
+
+[country.RO]
+sources = ["hipo"]
+alerts_only = ["eJobs.ro", "BestJobs.eu"]
+
+[country.DE]
+sources = ["arbeitnow"]
+alerts_only = ["StepStone", "XING"]
+
+[country.AT]
+sources = ["arbeitnow"]
+alerts_only = ["karriere.at", "StepStone"]
+
+[country.FR]
+sources = []
+alerts_only = ["France Travail (its job API is suspended since late 2026)", "Welcome to the Jungle", "APEC"]
+
+[country.PT]
+sources = []
+alerts_only = ["Net-Empregos", "ITJobs.pt"]
+
+[country.IT]
+sources = []
+alerts_only = ["InfoJobs Italia"]
+
+[country.NL]
+sources = []
+alerts_only = ["Nationale Vacaturebank"]
+
+[country.PL]
+sources = []
+alerts_only = ["Pracuj.pl", "Just Join IT", "No Fluff Jobs"]
+
+[country.GB]
+sources = ["cybersecurityjobsite"]
+alerts_only = ["Reed", "Totaljobs", "CWJobs"]
+
+[country.IN]
+sources = []
+alerts_only = ["Naukri", "foundit (Monster India)"]

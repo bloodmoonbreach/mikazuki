@@ -1,0 +1,80 @@
+{% extends "base.html" %}{% block title %}Apply: {{ j.title }}{% endblock %}
+{% block head %}{% if a.status == 'drafting' %}<meta http-equiv="refresh" content="4">{% endif %}{% endblock %}
+{% block content %}
+<p class="crumbs"><a href="/feed">Feed</a><a href="/jobs/{{ j.uid }}">{{ j.title }}</a></p>
+<h1>Apply: {{ j.title }} {% if j.company %}<small>at {{ j.company }}</small>{% endif %}</h1>
+
+{% if a.ai_ban %}
+<p class="note bad"><b>This employer forbids AI-written answers.</b> “{{ a.ai_ban }}” Nothing was drafted: the open questions are yours to write. The answers below that come from your profile are plain facts.</p>
+{% endif %}
+{% if a.status == 'drafting' %}
+<p class="note warn">Drafting open answers with the local model ({{ a.progress or 'starting' }}). This page refreshes by itself.</p>
+{% elif a.status == 'error' %}
+<p class="note bad">{{ a.error }}</p>
+{% endif %}
+
+<div class="row">
+  {% if a.form_url or j.url %}<a class="button" href="{{ (a.form_url or j.url)|safe_url }}" target="_blank" rel="noopener noreferrer">Open the application form</a>{% endif %}
+  {% if a.cv_file %}<a class="button ghost" href="/files/{{ a.cv_file }}" target="_blank">Tailored CV ({{ a.track }}, {{ a.lang }})</a>{% endif %}
+  {% if j.status != 'applied' %}
+  <form method="post" action="/jobs/{{ j.uid }}/status"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="status" value="applied"><button class="ghost">I sent it: mark as applied</button></form>
+  {% endif %}
+</div>
+
+<p class="muted small">
+  {{ a.questions|length }} question{{ '' if a.questions|length == 1 else 's' }}
+  {% if a.source == 'greenhouse' %}read from Greenhouse{% elif a.source == 'lever' %}read from Lever{% elif a.source == 'pasted' %}pasted by you{% endif %}
+  · {{ counts.code }} filled from your profile · {{ counts.ai }} {{ 'open, yours to write' if a.ai_ban else 'drafted' }} · {{ counts.edited }} edited · {{ counts.you }} for you to answer
+  {% if needs %}· <b class="bad">{{ needs }} need{{ 's' if needs == 1 }} your input</b>{% endif %}
+  · nothing is ever submitted for you.
+</p>
+
+<form method="post" action="/jobs/{{ j.uid }}/apply" class="row">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="small muted">CV track <select name="track">{% for t in tracks %}<option {% if t == a.track %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></label>
+  <label class="small muted">Language <select name="lang">{% for l in langs %}<option {% if l == a.lang %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></label>
+  <button class="ghost" {% if a.status == 'drafting' %}disabled{% endif %}>Start over (re-read form, re-tailor CV)</button>
+</form>
+
+{% if a.questions %}
+<form method="post" action="/jobs/{{ j.uid }}/apply/save" class="stack">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  {% for q in a.questions %}
+  <article class="qa origin-{{ q.origin }}">
+    <div class="qhead">
+      <label for="a{{ loop.index0 }}"><b>{{ q.label }}</b>{% if q.required %} <span class="bad">*</span>{% endif %}</label>
+      <span class="chip small">{{ 'yours to write' if a.ai_ban and q.origin == 'ai' else {'code': 'from your profile', 'ai': 'AI draft', 'you': 'your call', 'edited': 'edited'}[q.origin] }}</span>
+    </div>
+    {% if q.note %}<p class="hint">{{ q.note }}</p>{% endif %}
+    {% if q.options %}<details class="small"><summary>{{ q.options|length }} option{{ 's' if q.options|length > 1 }}</summary><p class="muted">{{ q.options[:40]|join(' · ') }}{% if q.options|length > 40 %} …{% endif %}</p></details>{% endif %}
+    {% if q.kind == 'file' and q.origin == 'code' and a.cv_file %}
+      <p><a href="/files/{{ a.cv_file }}" target="_blank">{{ a.cv_file.split('/')[-1] }}</a></p>
+    {% else %}
+    <textarea id="a{{ loop.index0 }}" name="a{{ loop.index0 }}" rows="{{ 2 if q.kind in ('text', 'select', 'multi', 'consent', 'file') else 6 }}"
+      {% if q.origin == 'you' %}placeholder="Yours to answer"{% elif a.status == 'drafting' and q.origin == 'ai' and not q.answer %}placeholder="Drafting…"{% endif %}>{{ q.answer }}</textarea>
+    <div class="row small">
+      <button type="button" class="ghost" data-copy="a{{ loop.index0 }}">Copy</button>
+      {% if q.origin in ('ai', 'edited') and not a.ai_ban and q.kind != 'file' %}
+      <button class="ghost" formaction="/jobs/{{ j.uid }}/apply/draft" name="index" value="{{ loop.index0 }}" {% if a.status == 'drafting' %}disabled{% endif %}
+        {% if q.origin == 'edited' %}data-confirm="Replace your edited answer with a new draft?"{% endif %}>Redraft</button>
+      {% endif %}
+    </div>
+    {% endif %}
+  </article>
+  {% endfor %}
+  <div class="row savebar"><button>Save answers</button>
+    {% if not a.ai_ban and counts.ai %}<button class="ghost" formaction="/jobs/{{ j.uid }}/apply/draft" {% if a.status == 'drafting' %}disabled{% endif %}
+      data-confirm="Redraft every AI answer you haven't edited?">Redraft all AI answers</button>{% endif %}</div>
+</form>
+{% endif %}
+
+<details {% if not a.questions %}open{% endif %} class="result">
+  <summary><b>{{ 'Paste the questions' if not a.questions else 'Replace with pasted questions' }}</b></summary>
+  <p class="hint">For forms mikazuki can't read (Workday, LinkedIn, company sites): copy the questions from the form, one per line or separated by blank lines. Mark required ones with *. Add the limit if there is one, e.g. "(max 500 characters)".</p>
+  <form method="post" action="/jobs/{{ j.uid }}/apply/questions" class="stack">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <textarea name="questions" rows="8" placeholder="Why do you want to work here? (max 1000 characters)&#10;&#10;Do you have the right to work in Spain? *"></textarea>
+    <div><button {% if a.status == 'drafting' %}disabled{% endif %}>Use these questions</button></div>
+  </form>
+</details>
+{% endblock %}

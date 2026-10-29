@@ -1,0 +1,40 @@
+{% extends "base.html" %}{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+{% if load_error %}<p class="note bad">Your files have an error: {{ load_error }} — <a href="/edit">fix it in the editor</a>.</p>{% endif %}
+<div class="cards">
+  <a class="card" href="/feed"><span class="card-num{{ ' lit' if new_matches else '' }}">{{ new_matches }}</span><span class="card-label">new matches in the feed</span></a>
+  <a class="card" href="/tracker"><span class="card-num">{{ funnel.applied }}</span><span class="card-label">applied, {{ funnel.interview }} interview{{ '' if funnel.interview == 1 else 's' }}, {{ funnel.waiting }} waiting{% if funnel.interview_rate is not none %}; interview rate {{ funnel.interview_rate }}%{% endif %}</span></a>
+  <a class="card" href="/lint"><span class="card-num{{ ' bad' if counts.error else '' }}">{{ counts.error }}</span><span class="card-label">CV errors, {{ counts.warning }} warnings</span></a>
+  <a class="card" href="/check"><span class="card-num card-word">Check</span><span class="card-label">Paste a job: where it can be done from, plus a tailored CV</span></a>
+</div>
+
+<h2>Tracks</h2>
+<table class="list stackable">
+  <tr><th>Track</th><th>Headline</th><th>Languages</th><th></th></tr>
+  {% for id, langs, title in tracks %}
+  <tr>
+    <td data-label="Track"><a href="/edit?file=tracks/{{ id }}.yaml">{{ id }}</a></td><td data-label="Headline">{{ title }}</td><td data-label="Languages">{{ langs|join(', ')|upper }}</td>
+    <td class="actions"><div>
+      <form method="post" action="/build"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="track" value="{{ id }}"><button>Build PDF</button></form>
+      <form method="post" action="/tracks/{{ id }}/delete" data-confirm="Delete track {{ id }}? (kept in history)"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="quiet danger">Delete</button></form>
+    </div></td>
+  </tr>
+  {% else %}<tr><td colspan="4">No tracks yet.</td></tr>{% endfor %}
+</table>
+<div class="row">
+  <form method="post" action="/build"><input type="hidden" name="csrf" value="{{ csrf }}">
+    <select name="formats"><option value="pdf">PDF</option><option value="pdf,md">PDF + Markdown</option><option value="pdf,md,json,html">All formats</option></select>
+    <button>Build all tracks</button></form>
+  <form method="post" action="/tracks/new" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}">
+    <input name="track_id" placeholder="new-track-id" required pattern="[a-z0-9][a-z0-9_-]*" size="14">
+    <input name="title" placeholder="Title, e.g. Junior SOC Analyst" required size="26">
+    <button class="ghost">New track</button></form>
+</div>
+
+{% if outputs %}
+<h2>Latest files</h2>
+<ul class="files">{% for f in outputs[:6] %}<li><a href="/files/{{ f.rel }}" target="_blank">{{ f.rel }}</a> <small>{{ f.mtime.strftime('%d %b %H:%M') }}</small></li>{% endfor %}</ul>
+<p><a href="/files">All CVs and files</a></p>
+{% endif %}
+{% endblock %}

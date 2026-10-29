@@ -1,0 +1,68 @@
+{% extends "base.html" %}{% from "_moon.html" import moon %}{% block title %}{{ j.title }}{% endblock %}
+{% block content %}
+<p class="crumbs"><a href="/tracker">Tracker</a>{% if j.origin == 'feed' or not j.origin %}<a href="/feed">Feed</a>{% endif %}</p>
+<h1>{{ j.title }} {% if j.company %}<small>at {{ j.company }}</small>{% endif %}</h1>
+<p class="muted">{{ j.location or 'location not given' }} · {% if j.origin in ('manual', 'import') %}{{ j.platform or j.origin }}{% else %}via <b>{{ j.source_name }}</b>{% endif %}{% if j.posted %} · posted {{ j.posted[:10] }}{% endif %}</p>
+
+<div class="row">
+  {% if j.url %}<a class="button" href="{{ j.url|safe_url }}" target="_blank" rel="noopener noreferrer">Open the posting</a>{% endif %}
+  {% if has_apply %}<a class="button" href="/jobs/{{ j.uid }}/apply">Application answers</a>{% else %}
+  <form method="post" action="/jobs/{{ j.uid }}/apply"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Apply</button></form>{% endif %}
+  <a class="button ghost" href="/check?job={{ j.uid }}">Check &amp; tailor CV</a>
+  {% if j.cv_file %}<a class="button ghost" href="/files/{{ j.cv_file }}" target="_blank">CV used</a>{% endif %}
+</div>
+
+<div class="statusbar">
+  {% for st in statuses %}
+  <form method="post" action="/jobs/{{ j.uid }}/status"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="status" value="{{ st }}">
+    <button class="{{ '' if st == j.status else 'ghost' }} st-{{ st }}" {% if st == j.status %}disabled{% endif %}>{{ st }}</button></form>
+  {% endfor %}
+</div>
+
+{% if j.verdicts or j.fit is not none %}<div class="job-signal job-signal-wide">{% if j.fit is not none %}{{ moon(j.fit) }}{% endif %}<ul class="verdicts" aria-label="Can it be done from">{% for c, v in (j.verdicts or {}).items() %}<li class="v {{ v }}" title="{{ c }}: {{ v }}">{{ c }} <span>{{ v }}</span></li>{% endfor %}</ul>{% if j.mode %}<span class="tag">{{ j.mode }}</span>{% endif %}</div>{% endif %}
+{% set traps = (j.traps or [])|reject('equalto', '?')|list %}{% if j.traps %}<p class="note warn small">This post contains text aimed at AI tools{% if traps %}, including the trap word{{ 's' if traps|length > 1 }} {{ traps|join(', ') }}: don't use {{ 'them' if traps|length > 1 else 'it' }}{% endif %}.</p>{% endif %}
+
+<div class="cols">
+<section>
+  <h2>Timeline</h2>
+  <form method="post" action="/jobs/{{ j.uid }}/event" class="stack">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <div class="row"><select name="kind">{% for k in kinds %}<option {% if k == 'note' %}selected{% endif %}>{{ k }}</option>{% endfor %}</select>
+      <input type="date" name="at" value="{{ today }}"></div>
+    <textarea name="text" rows="3" placeholder="e.g. Recruiter email: technical test on Friday" required></textarea>
+    <div><button>Add</button></div>
+  </form>
+  <ul class="timeline">{% for e in events %}
+    <li><span class="muted small">{{ e.at[:10] }}</span> <b>{{ e.kind }}</b> {{ e.text }}
+      <form method="post" action="/jobs/{{ j.uid }}/event/{{ e.id }}/delete" class="inline" data-confirm="Remove this entry?"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="link">remove</button></form></li>
+  {% else %}<li class="muted">Nothing yet.</li>{% endfor %}</ul>
+</section>
+
+<section>
+  <h2>Details</h2>
+  <form method="post" action="/jobs/{{ j.uid }}" class="stack details">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <div class="grid2">
+      <label>Title <input name="title" value="{{ j.title or '' }}"></label>
+      <label>Company <input name="company" value="{{ j.company or '' }}"></label>
+      <label>Location <input name="location" value="{{ j.location or '' }}"></label>
+      <label>Profile <input name="profile" value="{{ j.profile or j.search or '' }}" placeholder="Cybersecurity / Help desk"></label>
+      <label>Platform <input name="platform" value="{{ j.platform or '' }}" placeholder="{{ j.source_name or 'LinkedIn, InfoJobs…' }}"></label>
+      <label>Link <input name="url" type="url" value="{{ j.url or '' }}"></label>
+      <label>Posted <input name="posted" type="date" value="{{ (j.posted or '')[:10] }}"></label>
+      <label>Applied <input name="applied_at" type="date" value="{{ j.applied_at or '' }}"></label>
+      <label>Response <input name="response" value="{{ j.response or '' }}" placeholder="Denied, Interview, …"></label>
+      <label>Response date <input name="response_at" type="date" value="{{ j.response_at or '' }}"></label>
+      <label>Next action <input name="next_action" value="{{ j.next_action or '' }}" placeholder="Follow up by email"></label>
+      <label>Next action date <input name="next_at" type="date" value="{{ j.next_at or '' }}"></label>
+      <label>CV used <input name="cv_file" value="{{ j.cv_file or '' }}" placeholder="file under CVs"></label>
+      <label>Search filter used <input name="search_filter" value="{{ j.search_filter or '' }}"></label>
+    </div>
+    <label>Notes <textarea name="notes" rows="3">{{ j.notes or '' }}</textarea></label>
+    <details><summary>Job description</summary><textarea name="text" rows="12">{{ j.text or '' }}</textarea></details>
+    <div class="row"><button>Save</button></div>
+  </form>
+  <form method="post" action="/jobs/{{ j.uid }}/delete" data-confirm="Delete this job and its timeline?"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="ghost danger">Delete job</button></form>
+</section>
+</div>
+{% endblock %}

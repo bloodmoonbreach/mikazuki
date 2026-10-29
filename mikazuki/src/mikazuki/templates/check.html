@@ -1,0 +1,49 @@
+{% extends "base.html" %}{% block title %}Check a job{% endblock %}
+{% block content %}
+<h1>Check a job</h1>
+<form method="post" action="/check" class="stack">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="job" value="{{ form.job or '' }}">
+  {% if form.job %}<p class="note">Checking a job from your tracker. A tailored CV will be attached to it. <a href="/jobs/{{ form.job }}">Back to the job</a></p>{% endif %}
+  <label>Job post URL <input name="url" type="url" value="{{ form.url or '' }}" placeholder="https://… (public pages only)"></label>
+  <label>…or paste the post <textarea name="text" rows="10">{{ form.text or '' }}</textarea></label>
+  <div class="row">
+    <label>Tailor a CV <select name="track"><option value="">no</option>{% for t in tracks %}<option {% if form.track == t %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></label>
+    <label>Language <select name="lang"><option value="">track default</option>{% for l in ['en','es','ro'] %}<option {% if form.lang == l %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></label>
+    <label>Name <input name="name" value="{{ form.name or '' }}" placeholder="company (file name)" size="16"></label>
+    <label class="check"><input type="checkbox" name="use_llm" value="1" {% if form.use_llm %}checked{% endif %}> Ask the LLM if unclear</label>
+    <button>Check</button>
+  </div>
+</form>
+
+{% if result %}
+<section class="result">
+  <h2>{{ result.job.title or 'Result' }}{% if result.job.company %} <small>@ {{ result.job.company }}</small>{% endif %}</h2>
+  <div class="job-signal job-signal-wide"><ul class="verdicts" aria-label="Can it be done from">{% for c in result.countries %}<li class="v {{ c.verdict }}" title="{{ c.country }}: {{ c.verdict }}">{{ c.country }} <span>{{ c.verdict }}</span></li>{% endfor %}</ul>{% if result.mode %}<span class="tag">{{ result.mode }}</span>{% endif %}</div>
+  <ul>{% for c in result.countries %}<li><b>{{ c.country }}:</b> {{ c.reasons|join('; ') }}</li>{% endfor %}</ul>
+  <dl class="facts">
+    {% if result.salary %}<dt>Salary</dt><dd>{{ '{:,.0f}'.format(result.salary.min) }}{% if result.salary.max != result.salary.min %}–{{ '{:,.0f}'.format(result.salary.max) }}{% endif %} {{ result.salary.currency }}/{{ result.salary.period }}{% if result.salary.gross is true %} gross{% elif result.salary.gross is false %} net{% endif %}</dd>{% endif %}
+    {% if result.languages.required %}<dt>Languages required</dt><dd>{{ result.languages.required|join(', ') }}{% if result.languages.missing %} — <b class="bad">you don't list: {{ result.languages.missing|join(', ') }}</b>{% endif %}</dd>{% endif %}
+    {% if result.languages.preferred %}<dt>Nice to have</dt><dd>{{ result.languages.preferred|join(', ') }}</dd>{% endif %}
+    {% if result.contract %}<dt>Contract</dt><dd>{{ result.contract|join(', ') }}</dd>{% endif %}
+    {% if result.llm %}<dt>LLM</dt><dd>{{ result.llm.accepted }} accepted / {{ result.llm.rejected }} rejected{% if result.llm.error %} ({{ result.llm.error }}){% endif %}</dd>{% endif %}
+  </dl>
+  {% if result.safety.findings %}
+  <div class="note warn"><b>This post contains text aimed at AI tools (risk: {{ result.safety.risk }}). It was removed before analysis.</b>
+    <ul>{% for f in result.safety.findings %}<li>{{ f.category }}{% if f.hidden %} (hidden){% endif %}{% if f.trap_word %} — trap word “{{ f.trap_word }}”: don't use it in your application{% endif %}: <q>{{ f.text }}</q></li>{% endfor %}</ul></div>
+  {% endif %}
+  <details><summary>Evidence</summary><ul>{% for e in result.evidence %}<li><code>{{ e.rule }}</code> {{ e.text }}</li>{% endfor %}</ul></details>
+</section>
+{% endif %}
+
+{% if tailored %}
+<section class="result">
+  <h2>Tailored CV <small>({{ tailored.lang }})</small></h2>
+  <div class="row"><a class="button" href="/files/{{ tailored.file }}" target="_blank">Open PDF</a> <a class="button ghost" href="/files/{{ tailored.file }}?download=1">Download</a>
+  {% if tailored.job %}<form method="post" action="/jobs/{{ tailored.job }}/status"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="status" value="applied"><button>I sent this CV: mark as applied</button></form>
+  <a class="button ghost" href="/jobs/{{ tailored.job }}">Open in tracker</a>{% endif %}</div>
+  <p><b>Matched:</b> {{ tailored.report.matched|join(', ') or '—' }}</p>
+  {% if tailored.report.gaps %}<p><b>In the post but not in your master:</b> {{ tailored.report.gaps|join(', ') }}<br><small>Nothing was added. If any of these are true for you, add them to master.yaml.</small></p>{% endif %}
+  {% if tailored.report.hidden %}<p><b>Relevant but excluded by this track:</b> {{ tailored.report.hidden|join(', ') }}</p>{% endif %}
+</section>
+{% endif %}
+{% endblock %}

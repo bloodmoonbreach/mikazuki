@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}Version of {{ target }}{% endblock %}
+{% block content %}
+<h1>{{ target }} <small>{{ name.split('__')[0] }}</small></h1>
+<form method="post" action="/history/{{ name }}/restore" data-confirm="Replace the current {{ target }} with this version?">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><button>Restore this version</button> <a href="/edit?file={{ target }}">Back to editor</a></form>
+<pre class="code">{{ text }}</pre>
+{% endblock %}

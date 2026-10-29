@@ -1,0 +1,127 @@
+# Field presets for the setup wizard. Each preset offers roles; each chosen role becomes a CV track and a
+# feed search. Keywords are matched in job titles (case- and accent-insensitive), so list the words
+# employers really use, in every language of your job market. Pull requests with more languages welcome.
+
+[[preset]]
+id = "it-security"
+name = "Cybersecurity and IT support"
+blurb = "Security analyst, SOC, help desk, systems and network administration."
+skills = "it-security"
+sources = ["cybersecurityjobsite"]
+
+  [[preset.role]]
+  id = "security"
+  title = {en = "Security Analyst", es = "Analista de ciberseguridad", ro = "Analist securitate cibernetică"}
+  keywords = ["security analyst", "SOC analyst", "SOC", "cybersecurity", "cyber security", "information security",
+              "security engineer", "incident response", "threat", "pentester", "penetration tester", "blue team",
+              "ciberseguridad", "analista de seguridad", "seguridad informática", "securitate cibernetica",
+              "analist securitate", "securitate IT"]
+  workday = ["security", "cyber"]
+
+  [[preset.role]]
+  id = "support"
+  title = {en = "IT Support Technician", es = "Técnico de soporte IT", ro = "Tehnician suport IT"}
+  keywords = ["help desk", "helpdesk", "service desk", "IT support", "technical support", "desktop support",
+              "support technician", "support engineer", "soporte técnico", "técnico de soporte", "técnico informático",
+              "microinformática", "suport tehnic", "suport IT", "tehnician IT"]
+  workday = ["help desk", "service desk", "IT support"]
+
+  [[preset.role]]
+  id = "sysadmin"
+  title = {en = "Systems Administrator", es = "Administrador de sistemas", ro = "Administrator de sistem"}
+  keywords = ["system administrator", "systems administrator", "sysadmin", "network administrator",
+              "network engineer", "infrastructure engineer", "administrador de sistemas", "administrador de redes",
+              "técnico de sistemas", "administrator de sistem", "administrator retea", "inginer de retea"]
+  workday = ["system administrator", "network"]
+
+[[preset]]
+id = "software-data"
+name = "Software and data"
+blurb = "Developer, QA and test, data analyst, DevOps and cloud."
+skills = "software-data"
+sources = []
+
+  [[preset.role]]
+  id = "developer"
+  title = {en = "Software Developer", es = "Desarrollador de software", ro = "Dezvoltator software"}
+  keywords = ["software developer", "software engineer", "developer", "frontend", "front-end", "backend", "back-end",
+              "full stack", "fullstack", "web developer", "programmer", "desarrollador", "programador",
+              "ingeniero de software", "dezvoltator", "programator", "inginer software"]
+  workday = ["software engineer", "developer"]
+
+  [[preset.role]]
+  id = "qa"
+  title = {en = "QA Engineer", es = "Ingeniero de QA", ro = "Inginer QA"}
+  keywords = ["QA", "quality assurance", "test engineer", "tester", "test automation", "SDET", "testing",
+              "ingeniero de pruebas", "probador", "inginer testare", "tester software"]
+  workday = ["QA", "test engineer"]
+
+  [[preset.role]]
+  id = "data"
+  title = {en = "Data Analyst", es = "Analista de datos", ro = "Analist de date"}
+  keywords = ["data analyst", "business intelligence", "BI analyst", "data engineer", "analytics", "reporting analyst",
+              "analista de datos", "ingeniero de datos", "analist de date", "analist BI"]
+  workday = ["data analyst", "data engineer"]
+
+  [[preset.role]]
+  id = "devops"
+  title = {en = "DevOps Engineer", es = "Ingeniero DevOps", ro = "Inginer DevOps"}
+  keywords = ["devops", "site reliability", "SRE", "cloud engineer", "platform engineer", "infrastructure engineer",
+              "ingeniero cloud", "inginer cloud"]
+  workday = ["devops", "cloud engineer"]
+
+[[preset]]
+id = "business-creative"
+name = "Business and creative"
+blurb = "Customer support and success, sales, marketing, design, office and operations."
+skills = "business-creative"
+sources = []
+
+  [[preset.role]]
+  id = "customer"
+  title = {en = "Customer Support Specialist", es = "Especialista en atención al cliente", ro = "Specialist relații clienți"}
+  keywords = ["customer support", "customer service", "customer success", "customer care", "client support",
+              "support specialist", "atención al cliente", "servicio al cliente", "customer experience",
+              "relatii clienti", "suport clienti", "call center"]
+  workday = ["customer support", "customer success"]
+
+  [[preset.role]]
+  id = "sales"
+  title = {en = "Sales Representative", es = "Comercial", ro = "Reprezentant vânzări"}
+  keywords = ["sales representative", "sales development", "SDR", "BDR", "account executive", "inside sales",
+              "business development", "comercial", "ejecutivo de ventas", "agente comercial", "reprezentant vanzari",
+              "agent vanzari"]
+  workday = ["sales development", "inside sales"]
+
+  [[preset.role]]
+  id = "marketing"
+  title = {en = "Marketing Specialist", es = "Especialista en marketing", ro = "Specialist marketing"}
+  keywords = ["marketing", "content", "copywriter", "social media", "community manager", "SEO", "growth",
+              "marketing digital", "redactor", "specialist marketing", "content writer"]
+  workday = ["marketing", "content"]
+
+  [[preset.role]]
+  id = "design"
+  title = {en = "Designer", es = "Diseñador", ro = "Designer"}
+  keywords = ["designer", "UX", "UI", "product designer", "graphic designer", "visual designer", "motion designer",
+              "diseñador", "diseño gráfico", "grafician", "design grafic"]
+  workday = ["designer", "UX"]
+
+  [[preset.role]]
+  id = "operations"
+  title = {en = "Operations Assistant", es = "Administrativo", ro = "Asistent operațiuni"}
+  keywords = ["administrative assistant", "operations assistant", "operations coordinator",
+              "executive assistant", "back office", "administrativo", "auxiliar administrativo", "recepcionista",
+              "asistent administrativ", "asistent manager", "operator date"]
+  workday = ["administrative assistant", "operations"]
+
+# Words that rule a job out by title, by the experience level you pick in the wizard.
+[exclude.entry]
+words = ["senior", "sr", "lead", "principal", "staff", "head", "director", "manager", "architect", "vp", "chief",
+         "jefe", "responsable", "líder", "coordinador", "sef", "coordonator", "intern", "internship", "becario",
+         "practicas", "stagiu", "trainee"]
+[exclude.mid]
+words = ["principal", "staff", "head", "director", "vp", "chief", "intern", "internship", "becario", "practicas",
+         "stagiu", "junior", "trainee"]
+[exclude.senior]
+words = ["intern", "internship", "becario", "practicas", "stagiu", "junior", "trainee", "graduate"]

@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% block title %}Edit {{ file }}{% endblock %}
+{% block content %}
+<h1>Edit</h1>
+<nav class="tabs">{% for f in files %}<a href="/edit?file={{ f }}" {% if f == file %}aria-current="page"{% endif %}>{{ f }}</a>{% endfor %}</nav>
+<form method="post" action="/edit" class="editor">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="file" value="{{ file }}">
+  <textarea name="text" spellcheck="false" autocapitalize="off" autocomplete="off">{{ text }}</textarea>
+  <div class="row"><button>Save</button><span class="hint">Checked before saving. Ctrl+S saves. Every save keeps the previous version.</span></div>
+</form>
+{% if history %}
+<h2>History</h2>
+<ul class="files">{% for name, target, when in history %}<li><a href="/history/{{ name }}">{{ when.strftime('%d %b %Y %H:%M:%S') }}</a></li>{% endfor %}</ul>
+{% endif %}
+{% endblock %}

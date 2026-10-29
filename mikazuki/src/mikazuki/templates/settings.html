@@ -1,0 +1,33 @@
+{% extends "base.html" %}{% block title %}Settings{% endblock %}
+{% block content %}
+<h1>Settings</h1>
+<div class="cols">
+  <section>
+    <h2>Your setup</h2>
+    <p class="hint">Roles, countries, languages, AI and sources. Running the setup again shows your current answers and replaces profile.toml, feed.toml and the role CV versions when you save (previous versions stay in History).</p>
+    <p><a class="button" href="/setup">Run the setup again</a></p>
+    <h3>Edit the files directly</h3>
+    <ul>
+      <li><a href="/edit?file=profile.toml">profile.toml</a>: countries, languages, AI, facts for application forms</li>
+      <li><a href="/edit?file=feed.toml">feed.toml</a>: searches, companies, careers pages, notifications</li>
+      <li><a href="/edit">master.yaml</a> and the CV versions in tracks/</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Account</h2>
+    <p class="muted">Signed in as <strong>{{ user }}</strong>.</p>
+    {% if from_env %}
+    <p class="hint">The password comes from the <code>MIKAZUKI_PASSWORD</code> environment variable; change it there and restart.</p>
+    {% else %}
+    <form method="post" action="/settings/password" class="stack">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <label>Current password <input name="current" type="password" autocomplete="current-password" required></label>
+      <label>New password <input name="password" type="password" autocomplete="new-password" minlength="10" required></label>
+      <label>New password again <input name="password2" type="password" autocomplete="new-password" minlength="10" required></label>
+      <button>Change password</button>
+      <p class="hint">Changing it signs you out everywhere.</p>
+    </form>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

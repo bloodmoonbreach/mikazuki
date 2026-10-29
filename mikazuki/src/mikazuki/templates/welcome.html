@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block title %}Welcome{% endblock %}
+{% block content %}
+<h1>Welcome to mikazuki</h1>
+<p>A few questions tailor it to you: the jobs you're after, where you can work, your CV, and where to look. About ten minutes, and you can change everything later.</p>
+<p><a class="button" href="/setup">{{ 'Continue the setup' if setup_started else 'Start the setup' }}</a></p>
+<h2>Just looking?</h2>
+<p class="hint">Fill it with a fictional person to see how everything works first. You can run the setup afterwards; it replaces the example settings.</p>
+<form method="post" action="/init"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="ghost">Create example workspace</button></form>
+{% endblock %}

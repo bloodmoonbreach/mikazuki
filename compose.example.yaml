@@ -1,0 +1,20 @@
+# Copy to compose.yaml in the repository root and create an `.env` file (chmod 600; it may stay empty).
+# Then: docker compose up -d --build   →   http://<host>:8780
+services:
+  mikazuki:
+    build: .
+    image: mikazuki:local
+    container_name: mikazuki
+    restart: unless-stopped
+    user: "1000:1000"              # owner of ./data on the host
+    env_file: .env                 # optional: TELEGRAM_BOT_TOKEN, BROWSER_HELPER_TOKEN; job-source keys (ADZUNA_APP_ID…)
+                                   # here or in the setup; MIKAZUKI_PASSWORD/_USER skip the account page (older installs)
+    ports:
+      - "8780:8780"                # LAN / VPN only. Don't expose this to the internet.
+    volumes:
+      - ./data:/data               # your master.yaml, tracks/, profile.toml, feed.toml, feed.db, out/
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 384m

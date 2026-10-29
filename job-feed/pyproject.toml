@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "job-feed"
+version = "0.1.0"
+description = "Collect job posts from public job APIs and feeds, check where they can be done from (remote-check), score them against your CV (cvtracks), store and notify."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [{ name = "bloodmoonbreach" }]
+dependencies = ["remote-eligibility", "cvtracks", "protego>=0.7", "trafilatura>=2.3"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+job-feed = "jobfeed.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

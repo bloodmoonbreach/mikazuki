@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block title %}CVs{% endblock %}
+{% block content %}
+<h1>CVs</h1>
+{% if not outputs %}<p>Nothing built yet. <a href="/">Build from the dashboard</a>.</p>{% endif %}
+<table class="list">
+  <tr><th>File</th><th>Built</th><th>Size</th><th></th></tr>
+  {% for f in outputs %}
+  <tr><td><a href="/files/{{ f.rel }}" target="_blank">{{ f.rel }}</a></td><td>{{ f.mtime.strftime('%d %b %Y %H:%M') }}</td><td>{{ (f.size/1024)|round(1) }} KB</td>
+    <td class="actions"><div><a class="button ghost" href="/files/{{ f.rel }}?download=1">Download</a>
+      <form method="post" action="/files/delete" data-confirm="Delete {{ f.rel }}?"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="rel" value="{{ f.rel }}"><button class="ghost">Delete</button></form></div></td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

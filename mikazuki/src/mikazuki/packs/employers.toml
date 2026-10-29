@@ -1,0 +1,639 @@
+# Employers whose public job boards mikazuki can read (Greenhouse, Lever, Ashby, Workable, Recruitee,
+# Workday, SmartRecruiters). `fields` says which presets include them; Workday and SmartRecruiters boards are
+# searched with terms built from your roles. Add your own on the Feed page (Add company).
+
+[[company]]
+name = "Bitdefender"
+ats = "greenhouse"
+slug = "scbitdefendersrl"
+fields = ["it-security"]
+
+[[company]]
+name = "Cloudflare"
+ats = "greenhouse"
+slug = "cloudflare"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Datadog"
+ats = "greenhouse"
+slug = "datadog"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Elastic"
+ats = "greenhouse"
+slug = "elastic"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "GitLab"
+ats = "greenhouse"
+slug = "gitlab"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Okta"
+ats = "greenhouse"
+slug = "okta"
+fields = ["it-security", "software-data"]
+
+[[company]]
+name = "SentinelOne"
+ats = "greenhouse"
+slug = "sentinellabs"
+fields = ["it-security"]
+
+[[company]]
+name = "Wiz"
+ats = "greenhouse"
+slug = "wizinc"
+fields = ["it-security", "software-data"]
+
+[[company]]
+name = "Recorded Future"
+ats = "greenhouse"
+slug = "recordedfuture"
+fields = ["it-security", "software-data"]
+
+[[company]]
+name = "Huntress"
+ats = "greenhouse"
+slug = "huntress"
+fields = ["it-security"]
+
+[[company]]
+name = "Tailscale"
+ats = "greenhouse"
+slug = "tailscale"
+fields = ["software-data"]
+
+[[company]]
+name = "Tines"
+ats = "greenhouse"
+slug = "tines"
+fields = ["it-security", "software-data"]
+
+[[company]]
+name = "Proton"
+ats = "greenhouse"
+slug = "proton"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Bitwarden"
+ats = "greenhouse"
+slug = "bitwarden"
+fields = ["it-security", "software-data"]
+
+[[company]]
+name = "Keeper Security"
+ats = "greenhouse"
+slug = "keepersecurity"
+fields = ["it-security"]
+
+[[company]]
+name = "Chainguard"
+ats = "greenhouse"
+slug = "chainguard"
+fields = ["it-security", "software-data"]
+
+[[company]]
+name = "Bugcrowd"
+ats = "greenhouse"
+slug = "bugcrowd"
+fields = ["it-security"]
+
+[[company]]
+name = "Synack"
+ats = "greenhouse"
+slug = "synack"
+fields = ["it-security"]
+
+[[company]]
+name = "Expel"
+ats = "greenhouse"
+slug = "expel"
+fields = ["it-security"]
+
+[[company]]
+name = "Canonical"
+ats = "greenhouse"
+slug = "canonical"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Mozilla"
+ats = "greenhouse"
+slug = "mozilla"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Jamf"
+ats = "greenhouse"
+slug = "jamf"
+fields = ["software-data"]
+
+[[company]]
+name = "Dashlane"
+ats = "greenhouse"
+slug = "dashlane"
+fields = ["it-security"]
+
+[[company]]
+name = "LastPass"
+ats = "greenhouse"
+slug = "lastpass"
+fields = ["it-security"]
+
+[[company]]
+name = "1Password"
+ats = "ashby"
+slug = "1password"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Vanta"
+ats = "ashby"
+slug = "vanta"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Drata"
+ats = "ashby"
+slug = "drata"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Snyk"
+ats = "ashby"
+slug = "snyk"
+fields = ["it-security", "software-data"]
+
+[[company]]
+name = "Semgrep"
+ats = "ashby"
+slug = "semgrep"
+fields = ["it-security", "software-data"]
+
+[[company]]
+name = "Socket"
+ats = "ashby"
+slug = "socket"
+fields = ["it-security", "software-data"]
+
+[[company]]
+name = "HackerOne"
+ats = "ashby"
+slug = "hackerone"
+fields = ["it-security"]
+
+[[company]]
+name = "Ledger"
+ats = "ashby"
+slug = "ledger"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Sophos"
+ats = "lever"
+slug = "sophos"
+fields = ["it-security"]
+
+[[company]]
+name = "Coalfire"
+ats = "lever"
+slug = "coalfire"
+fields = ["it-security"]
+
+[[company]]
+name = "JumpCloud"
+ats = "lever"
+slug = "jumpcloud"
+fields = ["it-security", "software-data"]
+
+[[company]]
+name = "Trail of Bits"
+ats = "workable"
+slug = "trailofbits"
+fields = ["it-security"]
+
+[[company]]
+name = "Intigriti"
+ats = "recruitee"
+slug = "intigriti"
+fields = ["it-security"]
+
+[[company]]
+name = "Accenture"
+ats = "workday"
+slug = "accenture.wd103.myworkdayjobs.com/accenture/AccentureCareers"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Santander"
+ats = "workday"
+slug = "santander.wd3.myworkdayjobs.com/santander/SantanderCareers"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Kyndryl"
+ats = "workday"
+slug = "kyndryl.wd5.myworkdayjobs.com/kyndryl/KyndrylProfessionalCareers"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "DXC Technology"
+ats = "workday"
+slug = "dxctechnology.wd1.myworkdayjobs.com/dxctechnology/DXCJobs"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Thales"
+ats = "workday"
+slug = "thales.wd3.myworkdayjobs.com/thales/Careers"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Airbus"
+ats = "workday"
+slug = "ag.wd3.myworkdayjobs.com/ag/Airbus"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "HP"
+ats = "workday"
+slug = "hp.wd5.myworkdayjobs.com/hp/ExternalCareerSite"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Philips"
+ats = "workday"
+slug = "philips.wd3.myworkdayjobs.com/philips/jobs-and-careers"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Salesforce"
+ats = "workday"
+slug = "salesforce.wd12.myworkdayjobs.com/salesforce/External_Career_Site"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Adobe"
+ats = "workday"
+slug = "adobe.wd5.myworkdayjobs.com/adobe/external_experienced"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Red Hat"
+ats = "workday"
+slug = "redhat.wd5.myworkdayjobs.com/redhat/jobs"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "PayPal"
+ats = "workday"
+slug = "paypal.wd1.myworkdayjobs.com/paypal/jobs"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Mastercard"
+ats = "workday"
+slug = "mastercard.wd1.myworkdayjobs.com/mastercard/CorporateCareers"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "CrowdStrike"
+ats = "workday"
+slug = "crowdstrike.wd5.myworkdayjobs.com/crowdstrike/crowdstrikecareers"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Equinix"
+ats = "workday"
+slug = "equinix.wd1.myworkdayjobs.com/equinix/External"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Workday"
+ats = "workday"
+slug = "workday.wd5.myworkdayjobs.com/workday/Workday"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Bosch"
+ats = "smartrecruiters"
+slug = "BoschGroup"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "ServiceNow"
+ats = "smartrecruiters"
+slug = "ServiceNow"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Experian"
+ats = "smartrecruiters"
+slug = "Experian"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Ubisoft"
+ats = "smartrecruiters"
+slug = "Ubisoft2"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Western Digital"
+ats = "smartrecruiters"
+slug = "WesternDigital"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Endava"
+ats = "smartrecruiters"
+slug = "Endava"
+fields = ["it-security", "software-data", "business-creative"]
+
+[[company]]
+name = "Adyen"
+ats = "greenhouse"
+slug = "adyen"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Airbnb"
+ats = "greenhouse"
+slug = "airbnb"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Cabify"
+ats = "greenhouse"
+slug = "cabify"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Celonis"
+ats = "greenhouse"
+slug = "celonis"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Databricks"
+ats = "greenhouse"
+slug = "databricks"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Doctolib"
+ats = "greenhouse"
+slug = "doctolib"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "GetYourGuide"
+ats = "greenhouse"
+slug = "getyourguide"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Miro"
+ats = "greenhouse"
+slug = "realtimeboardglobal"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "MongoDB"
+ats = "greenhouse"
+slug = "mongodb"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "N26"
+ats = "greenhouse"
+slug = "n26"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Stripe"
+ats = "greenhouse"
+slug = "stripe"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Twilio"
+ats = "greenhouse"
+slug = "twilio"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Palantir"
+ats = "lever"
+slug = "palantir"
+fields = ["software-data"]
+
+[[company]]
+name = "Spotify"
+ats = "lever"
+slug = "spotify"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Notion"
+ats = "ashby"
+slug = "notion"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Supabase"
+ats = "ashby"
+slug = "supabase"
+fields = ["software-data"]
+
+[[company]]
+name = "SpecterOps"
+ats = "greenhouse"
+slug = "specterops"
+fields = ["it-security"]
+
+[[company]]
+name = "Fever"
+ats = "greenhouse"
+slug = "feverup"
+fields = ["software-data", "business-creative"]
+
+[[company]]
+name = "Plain Concepts"
+ats = "workable"
+slug = "plainconcepts"
+fields = ["software-data"]
+
+[[company]]
+name = "UiPath"
+ats = "ashby"
+slug = "uipath"
+fields = ["software-data", "business-creative"]
+
+
+# Careers pages without a supported job system (read through their JSON-LD job markup or page text).
+# `countries`: offered when you pick one of these countries.
+
+[[careers]]
+name = "Tarlogic"
+url = "https://www.tarlogic.com/cybersecurity-jobs-careers/"
+countries = ["ES"]
+fields = ["it-security"]
+
+[[careers]]
+name = "Hispasec"
+url = "https://hispasec.com/en/jobs/"
+countries = ["ES"]
+fields = ["it-security"]
+
+[[careers]]
+name = "Kaspersky"
+url = "https://careers.kaspersky.com/vacancies"
+countries = ["ES"]
+fields = ["it-security"]
+
+[[careers]]
+name = "S2 Grupo"
+url = "https://s2grupo.es/talento/"   # the homepage has no job list; /talento/ lists every opening
+countries = ["ES"]
+fields = ["it-security"]
+
+[[careers]]
+name = "ESET"
+url = "https://jobs.eset.com/int/"   # ESET's own job portal (502 on 2026-10-12; the eset.com page only links to it)
+countries = ["ES"]
+fields = ["it-security"]
+
+[[careers]]
+name = "Sothis"
+url = "https://www.sothis.tech/portal-talento/"   # list loaded by JavaScript: needs the PC browser helper
+countries = ["ES"]
+fields = ["it-security"]
+
+[[careers]]
+name = "Ackcent"
+url = "https://www.ackcent.com/"
+countries = ["ES"]
+fields = ["it-security"]
+
+[[careers]]
+name = "Siemens"
+url = "https://jobs.siemens.com/en_US/externaljobs"
+countries = ["ES"]
+fields = ["it-security", "software-data", "business-creative"]
+
+[[careers]]
+name = "Indra / Minsait"
+url = "https://www.indragroup.com/es/talento"
+countries = ["ES"]
+fields = ["it-security", "software-data", "business-creative"]
+
+[[careers]]
+name = "NTT DATA"
+url = "https://careers.nttdata.com/global/en"
+countries = ["ES"]
+fields = ["it-security", "software-data", "business-creative"]
+
+[[careers]]
+name = "Deloitte España"
+url = "https://www.deloitte.com/es/es/careers.html"
+countries = ["ES"]
+fields = ["it-security", "software-data", "business-creative"]
+
+[[careers]]
+name = "BBVA"
+url = "https://www.bbva.com/es/empleo/"
+countries = ["ES"]
+fields = ["it-security", "software-data", "business-creative"]
+
+[[careers]]
+name = "CaixaBank"
+url = "https://caixabankcareers.com/"
+countries = ["ES"]
+fields = ["it-security", "software-data", "business-creative"]
+
+[[careers]]
+name = "Abertis (Acesa)"
+url = "https://www.abertis.com/"
+countries = ["ES"]
+fields = ["it-security", "software-data", "business-creative"]
+
+[[careers]]
+name = "Telefónica"
+url = "https://www.telefonica.com/"
+countries = ["ES"]
+fields = ["it-security", "software-data", "business-creative"]
+
+[[careers]]
+name = "Capgemini España"
+url = "https://www.capgemini.com/es-es/"
+countries = ["ES"]
+fields = ["it-security", "software-data", "business-creative"]
+
+[[careers]]
+name = "A2SECURE"
+url = "https://www.a2secure.com/"
+countries = ["ES"]
+fields = ["it-security"]
+
+[[careers]]
+name = "CounterCraft"
+url = "https://www.countercraftsec.com/"
+countries = ["ES"]
+fields = ["it-security"]
+
+[[careers]]
+name = "Zynap"
+url = "https://www.zynap.com/"
+countries = ["ES"]
+fields = ["it-security"]
+
+[[careers]]
+name = "Devo"
+url = "https://www.devo.com/"
+countries = ["ES"]
+fields = ["it-security"]
+
+[[careers]]
+name = "Red Points"
+url = "https://www.redpoints.com/"
+countries = ["ES"]
+fields = ["it-security"]
+
+[[careers]]
+name = "Outpost24"
+url = "https://outpost24.com/"
+countries = ["ES"]
+fields = ["it-security"]
+
+[[careers]]
+name = "Pentest-Tools.com"
+url = "https://pentest-tools.com/"
+countries = ["ES"]
+fields = ["it-security"]
+
+[[careers]]
+name = "Safetech Innovations"
+url = "https://www.safetech.ro/"
+countries = ["RO"]
+fields = ["it-security"]
+
+[[careers]]
+name = "Prosegur Cipher"
+url = "https://www.prosegurcipher.com/"
+countries = ["ES"]
+fields = ["it-security"]
+
+[[company]]
+name = "Orange Cyberdefense"   # Teamtailor board on its own domain (was a [[careers]] homepage that blocks scripts)
+ats = "teamtailor"
+slug = "jobs.orangecyberdefense.com"
+countries = ["ES"]
+fields = ["it-security"]
+
