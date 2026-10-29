@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/banner.png" alt="mikazuki 三日月: a self-hosted job-search desk" width="100%"></p>
+
 # mikazuki 三日月
 
 A self-hosted job-search desk. It collects job offers from company job systems and job boards, checks
